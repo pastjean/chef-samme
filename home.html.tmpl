@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Chef Sammé</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="og:title" content="Chef Sammé" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://chefsamme.com" />
+    <meta property="og:image" content="" />
+
+    <link rel="stylesheet" href="/static/css/main.css" />
+
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <div class="section">
+      <h1>Chef Sammé</h1>
+      <p>
+        un popup take-out qui prône la simplicité et qui a surtout pour but de
+        d'apporter le plaisir de manger, jusqu'à chez vous.
+      </p>
+    </div>
+
+    <nav>
+      <a href="#menu">Menu</a>
+      <a href="#order">Commander</a>
+    </nav>
+
+    <div class="section section-r">
+      <p>
+        En formule pour emporter et en quantité limité, le menu est offert du
+        jeudi au samedi.
+      </p>
+      <p>
+        Jeudi → Samedi<br />
+        60$<br />
+        Pour 2 personnes
+      </p>
+    </div>
+
+    <div class="section-space">
+      <h2 id="menu">Menu</h2>
+
+      <p>du 29 au 31 oct. 2020<br />60$</p>
+      <p>
+        focaccia aux herbes<br />
+        arancini à la tomate,<br />
+        olives marinées aux agrumes<br />
+        * * *<br />
+        saumon du Nouveau-Brunswick mariné,<br />
+        céleri-rave, champignons, cresson<br />
+        salade de farro, brocoli,<br />
+        kale, crème d’oignon caramélisé, grenoble<br />
+        * * *<br />
+        fusili alla vodka,<br />
+        parmigiano reggiano<br />
+        ragout de lentille, condiment de tomate séchée<br />
+        * * *<br />
+        gâteau crème sûre, petits fruits et pistache<br />
+        caramel salé<br />
+        biscuit avoine et raisin
+      </p>
+
+      <fieldset>
+        <h2 id="order">Commander</h2>
+        <p>TODO menu sur 50 restant</p>
+
+        <label for="form-name">Nom</label>
+        <input
+          type="text"
+          id="form-name"
+          name="name"
+          size="30"
+          placeholder="Votre Nom"
+        />
+        <label for="form-email">Courriel</label>
+        <input
+          type="text"
+          id="form-email"
+          name="email"
+          size="30"
+          placeholder="jean@example.com"
+        />
+        <label for="form-phone">Numéro de téléphone</label>
+        <input
+          type="text"
+          id="form-phone"
+          name="phone"
+          size="30"
+          placeholder="(418) 555-1212"
+        />
+        <label for="form-moment"
+          >Le moment auquel vous souhaiter passer récupérer la commande. Du 29
+          au 31 oct. de 15h à 18h30.
+        </label>
+        <input
+          type="text"
+          id="form-moment"
+          name="moment"
+          size="30"
+          width="100%"
+          placeholder="Le 29 à 15h00"
+        />
+
+        <Button id="pay">Passer à la caisse</Button>
+        <p>ps. La commande est officiellement placée qu'après le paiement.</p>
+      </fieldset>
+    </div>
+
+    <footer>
+      Chef Sammé<br />
+      233 rue Bagot<br />
+      Québec,QC
+    </footer>
+
+    <script type="text/javascript">
+      // Create an instance of the Stripe object with your publishable API key
+      var stripe = Stripe("{{.StripePublishableKey}}");
+      var elements = stripe.elements();
+
+      var checkoutButton = document.getElementById("pay");
+
+      checkoutButton.addEventListener("click", function () {
+        // Create a new Checkout Session using the server-side endpoint you
+        // created in step 3.
+        var formName = document.getElementById("form-name");
+        var formMoment = document.getElementById("form-moment");
+        var formPhone = document.getElementById("form-phone");
+        var formEmail = document.getElementById("form-email");
+        fetch("/create-checkout-session", {
+          method: "POST",
+          body: JSON.stringify({
+            name: formName.value,
+            email: formEmail.value,
+            phone: formPhone.value,
+            moment: formMoment.value,
+          }),
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (session) {
+            return stripe.redirectToCheckout({ sessionId: session.id });
+          })
+          .then(function (result) {
+            // If redirectToCheckout fails due to a browser or network
+            // error, you should display the localized error message to your
+            // customer using error.message.
+            if (result.error) {
+              alert(result.error.message);
+            }
+          })
+          .catch(function (error) {
+            console.error("Error:", error);
+          });
+      });
+    </script>
+  </body>
+</html>

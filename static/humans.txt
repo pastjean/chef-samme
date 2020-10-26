@@ -1,0 +1,10 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Pierre-Alexandre St-Jean pa is-at stjean.me
+
+# THANKS
+
+    All the open source of the world
