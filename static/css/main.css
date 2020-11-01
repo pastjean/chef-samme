@@ -69,7 +69,14 @@ select {
 
 fieldset {
   border: none;
+  margin: 0;
+  padding: 0;
 }
+
+label {
+  display: block;
+}
+
 /* Remove all animations and transitions for people that prefer not to see them */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -127,4 +134,8 @@ a,
 a:visited,
 a:active {
   color: inherit;
+}
+
+a.no-style {
+  text-decoration: none;
 }
